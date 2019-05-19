@@ -150,6 +150,7 @@ class MovieCard extends StatelessWidget {
               Text(
                 movies[i]['overview'],
                 maxLines: 3,
+                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: const Color(0xff8785A4), fontFamily: 'Arvo'),
