@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'movie_detail.dart';
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -58,6 +60,12 @@ class MovieListState extends State<MovieList> {
                       return FlatButton(
                         child: MovieCard(movies, i),
                         padding: const EdgeInsets.all(0.0),
+                        onPressed: () {
+                          Navigator.push(context, MaterialPageRoute(
+                            builder: (context) {
+                              return MovieDetail(movies[i]);
+                            }));
+                        },
                       );
                     },
                   ),
