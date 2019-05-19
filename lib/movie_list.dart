@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'movie_detail.dart';
+import 'movie_search.dart';
+import 'moviefy_drawer.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -28,10 +30,6 @@ class MovieListState extends State<MovieList> {
     getData();
     return Scaffold(
         appBar: AppBar(
-          leading: Icon(
-            Icons.arrow_back,
-            color: Colors.green,
-          ),
           centerTitle: true,
           title: Text.rich(TextSpan(
             text: '',
@@ -41,13 +39,8 @@ class MovieListState extends State<MovieList> {
               TextSpan(text: 'FY'),
             ],
           )),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: _placeHolder,
-            )
-          ],
         ),
+        drawer: MoviefyDrawer(),
         body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -61,10 +54,10 @@ class MovieListState extends State<MovieList> {
                         child: MovieCard(movies, i),
                         padding: const EdgeInsets.all(0.0),
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              return MovieDetail(movies[i]);
-                            }));
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return MovieDetail(movies[i]);
+                          }));
                         },
                       );
                     },
