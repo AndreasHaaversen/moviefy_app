@@ -6,15 +6,15 @@ part 'movie.g.dart';
 @JsonSerializable()
 class Movie {
   final String title;
-  final String posterURL;
+  final String poster_path;
   final String overview;
-  final int voteAverage;
+  final double vote_average;
 
   const Movie ({
       this.title,
-      this.posterURL,
+      this.poster_path,
       this.overview,
-      this.voteAverage,
+      this.vote_average,
   });
 
     factory Movie.fromJson(Map<String, dynamic> json) => _$MovieFromJson(json);

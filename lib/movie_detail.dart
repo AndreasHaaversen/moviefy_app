@@ -10,7 +10,7 @@ class MovieDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Stack(fit: StackFit.expand, children: <Widget>[
-      Image.network(imageUrl + movie['poster_path'], fit: BoxFit.cover),
+      Image.network(imageUrl + movie.poster_path, fit: BoxFit.cover),
       BackdropFilter(
         filter: ui.ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
         child: Container(
@@ -30,7 +30,7 @@ class MovieDetail extends StatelessWidget {
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
-                      image: NetworkImage(imageUrl + movie['poster_path']),
+                      image: NetworkImage(imageUrl + movie.poster_path),
                       fit: BoxFit.cover),
                   boxShadow: [
                     BoxShadow(
@@ -44,14 +44,14 @@ class MovieDetail extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   child: Text(
-                    movie['title'],
+                    movie.title,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 30.0,
                     ),
                   ),
                 ),
-                Text('${movie['vote_average']}/10',
+                Text('${movie.vote_average}/10',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
@@ -59,7 +59,7 @@ class MovieDetail extends StatelessWidget {
               ],
             ),
           ),
-          Text(movie['overview'], style: TextStyle(color: Colors.white)),
+          Text(movie.overview, style: TextStyle(color: Colors.white)),
           Padding(padding: const EdgeInsets.all(10.0)),
           Row(
             children: <Widget>[

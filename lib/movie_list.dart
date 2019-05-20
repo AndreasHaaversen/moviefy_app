@@ -1,33 +1,30 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
+import 'package:moviefy_app/bloc/movie_bloc.dart';
+import 'package:moviefy_app/models/movie_collection.dart';
+import 'package:moviefy_app/models/movie.dart';
 
 import 'movie_detail.dart';
 import 'moviefy_drawer.dart';
 import 'movie_search.dart';
 
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:moviefy_app/models/movie.dart';
 
 class MovieList extends StatefulWidget {
+  final MoviefyBlock block;
+
+  MovieList({Key key, this.block}) : super(key: key);
+
   @override
   MovieListState createState() => MovieListState();
 }
 
 class MovieListState extends State<MovieList> {
-  var movies;
-
-  void getData() async {
-    var data = await getJSON();
-
-    setState(() {
-      movies = data['results'];
-    });
-  }
+  List<Movie> movies;
 
   @override
   Widget build(BuildContext context) {
-    getData();
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -58,35 +55,30 @@ class MovieListState extends State<MovieList> {
               children: <Widget>[
                 MovieTitle(),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: movies == null ? 0 : movies.length,
-                    itemBuilder: (context, i) {
-                      return FlatButton(
-                        child: MovieCard(movies, i),
-                        padding: const EdgeInsets.all(0.0),
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return MovieDetail(movies[i]);
-                          }));
-                        },
-                      );
-                    },
-                  ),
-                )
-              ],
+                child: StreamBuilder<List<Movie>>(
+                    stream: widget.block.movies,
+                    initialData: <Movie>[],
+                    builder: (context, snapshot) => ListView(
+                          children: snapshot.data.map(_buildItem).toList(),
+                        ))
+                )],
             )));
+  }
+
+  Widget _buildItem(Movie movie) {
+    return FlatButton(
+      child: MovieCard(movie),
+      padding: const EdgeInsets.all(0.0),
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return MovieDetail(movie);
+        }));
+      },
+    );
   }
 }
 
 void _placeHolder() {}
-
-Future<Map> getJSON() async {
-  var url =
-      'http://api.themoviedb.org/3/discover/movie?api_key=1ead4035163c520c10d30f773c296b20';
-  http.Response response = await http.get(url);
-  return json.decode(response.body);
-}
 
 class MovieTitle extends StatelessWidget {
   @override
@@ -106,11 +98,10 @@ class MovieTitle extends StatelessWidget {
 }
 
 class MovieCard extends StatelessWidget {
-  final movies;
-  final i;
+  final movie;
   final image_url = 'https://image.tmdb.org/t/p/w500/';
 
-  MovieCard(this.movies, this.i);
+  MovieCard(this.movie);
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +122,7 @@ class MovieCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10.0),
                 color: Colors.grey,
                 image: DecorationImage(
-                    image: NetworkImage(image_url + movies[i]['poster_path']),
+                    image: NetworkImage(image_url + movie.poster_path),
                     fit: BoxFit.cover),
                 boxShadow: [
                   BoxShadow(
@@ -151,7 +142,7 @@ class MovieCard extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                movies[i]['title'],
+                movie.title,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 20.0,
@@ -160,7 +151,7 @@ class MovieCard extends StatelessWidget {
               ),
               Padding(padding: const EdgeInsets.all(2.0)),
               Text(
-                movies[i]['overview'],
+                movie.overview,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
