@@ -27,19 +27,6 @@ class MoviefyDrawer extends Drawer {
             },
           ),
           ListTile(
-            title: Text('Search'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (BuildContext context) {
-                    return Search();
-                  }
-                )
-              );
-            },
-          ),
-          ListTile(
             title: Text('Favorites'),
             onTap: () {
               Navigator.pop(context);

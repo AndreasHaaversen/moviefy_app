@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'movie_detail.dart';
-import 'movie_search.dart';
 import 'moviefy_drawer.dart';
+import 'movie_search.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -39,6 +39,17 @@ class MovieListState extends State<MovieList> {
               TextSpan(text: 'FY'),
             ],
           )),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: CustomSearchDelegate(),
+                );
+              },
+            )
+          ],
         ),
         drawer: MoviefyDrawer(),
         body: Padding(
