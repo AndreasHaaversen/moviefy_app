@@ -42,7 +42,7 @@ class MovieListState extends State<MovieList> {
               onPressed: () {
                 showSearch(
                   context: context,
-                  delegate: CustomSearchDelegate(),
+                  delegate: CustomSearchDelegate(widget.block),
                 );
               },
             )
@@ -55,25 +55,27 @@ class MovieListState extends State<MovieList> {
               children: <Widget>[
                 MovieTitle(),
                 Expanded(
-                child: StreamBuilder<List<Movie>>(
-                    stream: widget.block.movies,
-                    initialData: <Movie>[],
-                    builder: (context, snapshot) => ListView(
-                          children: snapshot.data.map(_buildItem).toList(),
-                        ))
-                )],
+                    child: StreamBuilder<List<Movie>>(
+                        stream: widget.block.movies,
+                        initialData: <Movie>[],
+                        builder: (context, snapshot) => ListView(
+                              children: snapshot.data.map(_buildItem).toList(),
+                            )))
+              ],
             )));
   }
 
   Widget _buildItem(Movie movie) {
-    return FlatButton(
-      child: MovieCard(movie),
-      padding: const EdgeInsets.all(0.0),
-      onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return MovieDetail(movie);
-        }));
-      },
+    return Card(
+      child: FlatButton(
+        child: MovieCard(movie),
+        padding: const EdgeInsets.all(0.0),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MovieDetail(movie);
+          }));
+        },
+      ),
     );
   }
 }

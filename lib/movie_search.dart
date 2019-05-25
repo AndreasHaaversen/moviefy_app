@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:moviefy_app/bloc/movie_bloc.dart';
 import 'dart:convert';
 
+import 'models/movie.dart';
 import 'movie_detail.dart';
 
-class CustomSearchDelegate extends SearchDelegate {
+class CustomSearchDelegate extends SearchDelegate<Movie> {
   var movies;
+  MoviefyBlock block;
 
-  void getData(String query) async {
-    var data = await getJSON(query);
-    movies = data['results'];
-  }
+  CustomSearchDelegate(this.block);
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -50,53 +50,68 @@ class CustomSearchDelegate extends SearchDelegate {
         ],
       );
     }
-    getData(query);
+    block.searchTerm.add(query);
 
-    if (movies == null) {
-      return Column(
+    return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Center(
-            child: Text(
-              "There were no results for \"" + query + "\"",
-            ),
-          )
-        ],
-      );
-    } else {
-      return Column(children: <Widget>[
-        Expanded(
-          child: ListView.builder(
-            itemCount: movies == null ? 0 : movies.length,
-            itemBuilder: (context, i) {
-              return FlatButton(
-                child: MovieSearchCard(movies, i),
-                padding: const EdgeInsets.all(0.0),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return MovieDetail(movies[i]);
-                  }));
-                },
-              );
-            },
-          ),
-        )
-      ]);
-    }
+          Expanded(
+              child: StreamBuilder<List<Movie>>(
+                  stream: block.moviesResult,
+                  initialData: <Movie>[],
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Center(child: CircularProgressIndicator()),
+                        ],
+                      );
+                    } else if (snapshot.data.length == 0) {
+                      return Column(
+                        children: <Widget>[
+                          Center(
+                              child: Text(
+                            "No Results Found.",
+                          )),
+                        ],
+                      );
+                    } else {
+                      return ListView(
+                          children: snapshot.data.map((movie) {
+                        return _buildItem(context, movie);
+                      }).toList());
+                    }
+                  }))
+        ]);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
     return Column();
   }
+
+  Widget _buildItem(BuildContext context, Movie movie) {
+    return Card(
+      child: FlatButton(
+        child: MovieSearchCard(movie),
+        padding: const EdgeInsets.all(0.0),
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return MovieDetail(movie);
+          }));
+        },
+      ),
+    );
+  }
 }
 
 class MovieSearchCard extends StatelessWidget {
-  final movies;
-  final i;
+  final Movie movie;
   final image_url = 'https://image.tmdb.org/t/p/w500/';
 
-  MovieSearchCard(this.movies, this.i);
+  MovieSearchCard(this.movie);
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +129,7 @@ class MovieSearchCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
               color: Colors.grey,
               image: DecorationImage(
-                  image: NetworkImage(image_url + movies[i]['poster_path']),
+                  image: NetworkImage(image_url + movie.poster_path),
                   fit: BoxFit.cover),
               boxShadow: [
                 BoxShadow(
@@ -131,7 +146,7 @@ class MovieSearchCard extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                movies[i]['title'],
+                movie.title,
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     fontSize: 20.0,
@@ -140,12 +155,11 @@ class MovieSearchCard extends StatelessWidget {
               ),
               Padding(padding: const EdgeInsets.all(2.0)),
               Text(
-                movies[i]['overview'],
+                movie.overview,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.left,
-                style: TextStyle(
-                    color: Colors.grey),
+                style: TextStyle(color: Colors.grey),
               )
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,14 +169,4 @@ class MovieSearchCard extends StatelessWidget {
       Divider(),
     ]);
   }
-}
-
-Future<Map> getJSON(String query) async {
-  var url =
-      'http://api.themoviedb.org/3/search/movie?api_key=1ead4035163c520c10d30f773c296b20' +
-          "&query=\"" +
-          query +
-          "\"";
-  Response response = await get(url);
-  return json.decode(response.body);
 }
