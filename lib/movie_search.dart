@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:moviefy_app/bloc/movie_bloc.dart';
-import 'dart:convert';
 
 import 'models/movie.dart';
 import 'movie_detail.dart';
@@ -80,8 +78,8 @@ class CustomSearchDelegate extends SearchDelegate<Movie> {
                     } else {
                       return ListView(
                           children: snapshot.data.map((movie) {
-                        return _buildItem(context, movie);
-                      }).toList());
+                           return _buildItem(context, movie);
+                          }).toList());
                     }
                   }))
         ]);
@@ -100,7 +98,8 @@ class CustomSearchDelegate extends SearchDelegate<Movie> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             return MovieDetail(movie);
-          }));
+          })
+          );
         },
       ),
     );
@@ -129,7 +128,7 @@ class MovieSearchCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(10.0),
               color: Colors.grey,
               image: DecorationImage(
-                  image: NetworkImage(image_url + movie.poster_path),
+                  image: movie.poster_path!= null ? NetworkImage( image_url + movie.poster_path) : AssetImage('assets/image.png'),
                   fit: BoxFit.cover),
               boxShadow: [
                 BoxShadow(

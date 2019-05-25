@@ -1,8 +1,5 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:moviefy_app/bloc/movie_bloc.dart';
-import 'package:moviefy_app/models/movie_collection.dart';
 import 'package:moviefy_app/models/movie.dart';
 
 import 'movie_detail.dart';
